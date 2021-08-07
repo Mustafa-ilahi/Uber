@@ -21,7 +21,7 @@ export default function MainNavigator() {
     const [isSignedIn, setIsSignedIn] = useState(false);
     // console.log('isSigned In', isSignedIn)
     return<NavigationContainer>
-            <Stack.Navigator screenOptions={{headerShown: true}}>
+            <Stack.Navigator screenOptions={{headerShown: false}}>
                 {
                     !isSignedIn ?
                 <Stack.Screen name="Auth" component={()=> <AuthNavigator setIsSignedIn={setIsSignedIn}/>} />
@@ -32,19 +32,25 @@ export default function MainNavigator() {
     </NavigationContainer>
 }
 
-function AuthNavigator(setIsSignedIn) {
-    // console.log('isSigned In', isSignedIn)
-    return<Stack.Navigator screenOptions={{headerShown: false}}>
+function AuthNavigator({setIsSignedIn}) {
+    return<Stack.Navigator screenOptions={{headerShown: true}}>
                 <Stack.Screen 
                 name="Login"
                 component={()=> <Login setIsSignedIn={setIsSignedIn}/>} />
             </Stack.Navigator>
 }
+function AppNavigator(){
+    return  <Drawer.Navigator>
+    <Drawer.Screen name="Dashboard Stack" component={DashboardStack} />
+    <Drawer.Screen name="Trips Stack" component={TripsStack} />
+    <Drawer.Screen name="Login" component={Login} />
+  </Drawer.Navigator>
+  }
 
 function DashboardStack() {
     return  <Stack.Navigator>
       <Stack.Screen name="Dashboard" component={Dashboard} />
-      <Stack.Screen name="Drop Off" component={DropOff} />
+      <Stack.Screen name="DropOff" component={DropOff} />      
     </Stack.Navigator>
 }
 
