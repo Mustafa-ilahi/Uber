@@ -46,7 +46,7 @@ export default function Login(){
       } catch ({ message }) {
         alert(`Facebook Login Error: ${message}`);
       }
-      console.log("==>Milgya?",loginStatus)
+      // console.log("==>Milgya?",loginStatus)
     }
   }
   

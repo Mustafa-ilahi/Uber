@@ -23,7 +23,7 @@ export default function MainNavigator() {
     return<NavigationContainer>
             <Stack.Navigator screenOptions={{headerShown: false}}>
                 {
-                    !isSignedIn ?
+                    isSignedIn ?
                 <Stack.Screen name="Auth" component={()=> <AuthNavigator setIsSignedIn={setIsSignedIn}/>} />
                 :
                 <Stack.Screen name="App" component={AppNavigator} />
@@ -41,7 +41,7 @@ function AuthNavigator({setIsSignedIn}) {
 }
 function AppNavigator(){
     return  <Drawer.Navigator>
-    <Drawer.Screen name="Dashboard Stack" component={DashboardStack} />
+    <Drawer.Screen name="Dashboard Stack" component={Dashboard} />
     <Drawer.Screen name="Trips Stack" component={TripsStack} />
     <Drawer.Screen name="Login" component={Login} />
   </Drawer.Navigator>
@@ -55,10 +55,10 @@ function DashboardStack() {
 }
 
 function DashboardTabs() {
-    return <Tab.Navigator>
-    <Tab.Screen name="Favorite Tab" component={FavoriteLocations} />
-    <Tab.Screen name="Dashboard Tab" component={Dashboard} />
-  </Tab.Navigator>
+    return <Stack.Navigator>
+    <Stack.Screen name="DashboardTab" component={Dashboard} />
+    <Stack.Screen name="FavoriteTab" component={FavoriteLocations} />
+  </Stack.Navigator>
 }
 
 function TripsStack() {
