@@ -6,12 +6,13 @@ import * as Location from 'expo-location';
 
 
 export default function Dashboard({navigation}) {
+  const [currentLocation, setCurrentLocation] = useState('');
     // console.log("Navigation from dashboard",navigation) 
     const [region, setRegion] = useState({
             latitude: 24.9323526,
             longitude: 67.0872638,
-            latitudeDelta: 0.00022,
-            longitudeDelta: 0.00021,
+            latitudeDelta: 0.0022,
+            longitudeDelta: 0.0021,
     })
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
@@ -23,17 +24,21 @@ export default function Dashboard({navigation}) {
             setErrorMsg('Permission to access location was denied');
             return;
           }
-          Location.watchPositionAsync({
-              distanceInterval: 0.01
-          }, location => {
-              const {coords: {latitude, longitude}} = location
-              setRegion({...region, latitude, longitude});
-              console.log('location***', location)
-          })
-        //   let location = await Location.getCurrentPositionAsync({});
-        //   setLocation(location);
-        //   const {coords: {latitude,longitude}} = location;
-        //   setRegion({...region, latitude, longitude});
+          // Location.watchPositionAsync({
+          //     distanceInterval: 0.01
+          // }, location => {
+          //     const {coords: {latitude, longitude}} = location
+          //     setRegion({...region, latitude, longitude});
+          //     console.log('location***', location)
+          // })
+          let location = await Location.getCurrentPositionAsync({});
+          setLocation(location);
+          const {coords: {latitude,longitude}} = location;
+          setRegion({...region, latitude, longitude});
+
+          fetch('https://api.foursquare.com/v2/venues/search?client_id=WW3RFWSW52A4L14OURWZ2RKBJBQAN0WZK4P02JUZMMH15N0B&client_secret=Y500SBLI0E0XCQOEFB0OPOKHY0HNDC2UEI50GDTBYOH0DHRC&ll=24.9121428,67.0545419&v=20180323')
+            .then(res => res.json())
+            .then(res => setCurrentLocation(res.response.venues[0].name))
         })();
       }, []);
       let text = 'Waiting..';
@@ -45,11 +50,21 @@ export default function Dashboard({navigation}) {
 
     return(
         <View>
-            <MapView region={region} style={styles.map}>
-                <Marker 
-                coordinate={region}
-                />
-            </MapView>
+            <MapView style={styles.map} region={region}>
+            <Marker 
+            title={currentLocation}
+            coordinate={region}
+            draggable={true}
+            onDragStart={(e)=>console.log('drag start',region)}
+            onDragEnd={(e)=>
+              setRegion({
+                ...region,
+                latitude:e.nativeEvent.coordinate.latitude,
+                longitude:e.nativeEvent.coordinate.longitude
+              })
+            }
+            />
+        </MapView>
 
             {/* <Text style={{fontSize:40}}>DASHBOARD SCREEN</Text>
             <Button 
