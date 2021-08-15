@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, Dimensions } from "react-native";
 import MapView ,{Marker} from 'react-native-maps';
 import { useState,useEffect } from "react/cjs/react.development";
 import * as Location from 'expo-location';
-
+import { storeLocation } from '../../config/firebase'
 
 export default function Dashboard({navigation}) {
   const [currentLocation, setCurrentLocation] = useState('');
@@ -31,10 +31,20 @@ export default function Dashboard({navigation}) {
           //     setRegion({...region, latitude, longitude});
           //     console.log('location***', location)
           // })
+
           let location = await Location.getCurrentPositionAsync({});
           setLocation(location);
+          // const {coords: {latitude,longitude}} = location;
           const {coords: {latitude,longitude}} = location;
+          console.log(location)
           setRegion({...region, latitude, longitude});
+          try{
+          await storeLocation(undefined,location)
+            console.log("chala gya==>")
+          }catch(e){
+            console.log("nh gya==>",e)
+          }
+          
 
           fetch('https://api.foursquare.com/v2/venues/search?client_id=WW3RFWSW52A4L14OURWZ2RKBJBQAN0WZK4P02JUZMMH15N0B&client_secret=Y500SBLI0E0XCQOEFB0OPOKHY0HNDC2UEI50GDTBYOH0DHRC&ll=24.9121428,67.0545419&v=20180323')
             .then(res => res.json())

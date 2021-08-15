@@ -25,7 +25,8 @@
     "@react-native-community/masked-view": "0.1.10",
     "expo-facebook": "~11.3.1",
     "react-native-maps": "0.28.0",
-    "expo-location": "~12.1.2"
+    "expo-location": "~12.1.2",
+    "firebase": "8.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
