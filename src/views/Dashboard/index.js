@@ -45,18 +45,24 @@ export default function Dashboard({navigation}) {
             console.log("nh gya==>",e)
           }
           
-
           fetch('https://api.foursquare.com/v2/venues/search?client_id=WW3RFWSW52A4L14OURWZ2RKBJBQAN0WZK4P02JUZMMH15N0B&client_secret=Y500SBLI0E0XCQOEFB0OPOKHY0HNDC2UEI50GDTBYOH0DHRC&ll=24.9121428,67.0545419&v=20180323')
             .then(res => res.json())
             .then(res => setCurrentLocation(res.response.venues[0].name))
         })();
       }, []);
-      let text = 'Waiting..';
-    if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
+
+      useEffect(()=>{
+        fetch(`https://api.foursquare.com/v2/venues/search?client_id=WW3RFWSW52A4L14OURWZ2RKBJBQAN0WZK4P02JUZMMH15N0B&client_secret=Y500SBLI0E0XCQOEFB0OPOKHY0HNDC2UEI50GDTBYOH0DHRC&near=${region.latitude},${region.longitude}&v=20180323`)
+            .then(res => res.json())
+            .then(res => console.log("drag end==>",res.response.venues[0].name))
+      },[region])
+
+  //   let text = 'Waiting..';
+  //   if (errorMsg) {
+  //   text = errorMsg;
+  // } else if (location) {
+  //   text = JSON.stringify(location);
+  // }
 
     return(
         <View>
