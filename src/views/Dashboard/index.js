@@ -7,6 +7,7 @@ import { storeLocation } from '../../config/firebase'
 
 export default function Dashboard({navigation}) {
   const [currentLocation, setCurrentLocation] = useState('');
+  const [pickUpLocation, setPickUpLocation] = useState('');
     // console.log("Navigation from dashboard",navigation) 
     const [region, setRegion] = useState({
             latitude: 24.9323526,
@@ -54,7 +55,7 @@ export default function Dashboard({navigation}) {
       useEffect(()=>{
         fetch(`https://api.foursquare.com/v2/venues/search?client_id=WW3RFWSW52A4L14OURWZ2RKBJBQAN0WZK4P02JUZMMH15N0B&client_secret=Y500SBLI0E0XCQOEFB0OPOKHY0HNDC2UEI50GDTBYOH0DHRC&near=${region.latitude},${region.longitude}&v=20180323`)
             .then(res => res.json())
-            .then(res => console.log("drag end==>",res.response.venues[0].name))
+            .then(res => setPickUpLocation(res.response.venues[0].name))
       },[region])
 
   //   let text = 'Waiting..';
@@ -68,7 +69,7 @@ export default function Dashboard({navigation}) {
         <View>
             <MapView style={styles.map} region={region}>
             <Marker 
-            title={currentLocation}
+            title={pickUpLocation}
             coordinate={region}
             draggable={true}
             onDragStart={(e)=>console.log('drag start',region)}
