@@ -25,7 +25,12 @@ export default function DropOff({route,navigation},props){
             <Text style={styles.pickUpLocation}>PickUp Location: <Text style={styles.location}>{pickUpLocation}</Text></Text>
             <TextInput style={styles.input} placeholder="Search Your Drop Location"/>
             <Button style={{color:"red"}} title="Select Ride" 
-            onPress={()=>navigation.navigate('SelectRide')}/>
+            onPress={()=>navigation.navigate('SelectRide',{
+                dropOffLocation: dropOffLocation,
+                pickUpLocation: pickUpLocation,
+                pickUpRegion: pickUpRegion,
+                dropOffRegion: region
+            })}/>
             <MapView style={styles.map} region={region}>
             <Marker 
             title={dropOffLocation}
@@ -58,10 +63,6 @@ const styles = StyleSheet.create({
         color:"red",
         textTransform:"capitalize"
     },
-    // rideButton : {
-    //     // height: "20px"
-    //     backgroundColor:"#000000"
-    // },
     map: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
