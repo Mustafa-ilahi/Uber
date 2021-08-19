@@ -58,12 +58,12 @@ export default function Dashboard({navigation}) {
             .then(res => setPickUpLocation(res.response.venues[0].name))
       },[region])
 
-  //   let text = 'Waiting..';
-  //   if (errorMsg) {
-  //   text = errorMsg;
-  // } else if (location) {
-  //   text = JSON.stringify(location);
-  // }
+    let text = 'Waiting..';
+    if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
 
     return(
       <View>
@@ -75,6 +75,7 @@ export default function Dashboard({navigation}) {
         })}
         />
             <MapView style={styles.map} region={region}>
+            {/* region={region} */}
             <Marker 
             title={pickUpLocation}
             coordinate={region}

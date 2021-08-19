@@ -4,7 +4,7 @@ import * as Facebook from 'expo-facebook';
 import { useState } from 'react';
 import Dashboard from '../Dashboard';
 
-export default function Login(){
+export default function Login({setIsSignedIn}){
   const [loginStatus, setLoginStatus] = useState(false)
   console.log(loginStatus)
   return(
@@ -38,7 +38,9 @@ export default function Login(){
           // Get the user's name using Facebook's Graph API
           const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
           Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
-          setLoginStatus(true)    
+          setIsSignedIn(true);
+          setLoginStatus(true);
+    
               
         } else {
           // type === 'cancel'

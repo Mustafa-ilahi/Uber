@@ -44,7 +44,7 @@ function AppNavigator(){
     return  <Drawer.Navigator>
     <Drawer.Screen name="Dashboard Stack" component={DashboardStack} />
     <Drawer.Screen name="Trips Stack" component={TripsStack} />
-    <Drawer.Screen name="Login" component={Login} />
+    {/* <Drawer.Screen name="Login" component={Login} /> */}
     {/* <Drawer.Screen name="DropOff" component={DropOff} /> */}
   </Drawer.Navigator>
   }
