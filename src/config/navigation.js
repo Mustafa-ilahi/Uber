@@ -11,6 +11,7 @@ import FavoriteLocations from '../views/FavoriteLocations';
 import YourTrips from '../views/YourTrips';
 import TripDetails from '../views/TripDetails';
 import Login from "../views/Login";
+import SelectRide from "../views/SelectRide";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -41,16 +42,18 @@ function AuthNavigator({setIsSignedIn}) {
 }
 function AppNavigator(){
     return  <Drawer.Navigator>
-    <Drawer.Screen name="Dashboard Stack" component={Dashboard} />
+    <Drawer.Screen name="Dashboard Stack" component={DashboardStack} />
     <Drawer.Screen name="Trips Stack" component={TripsStack} />
     <Drawer.Screen name="Login" component={Login} />
+    {/* <Drawer.Screen name="DropOff" component={DropOff} /> */}
   </Drawer.Navigator>
   }
 
 function DashboardStack() {
-    return  <Stack.Navigator>
+    return  <Stack.Navigator screenOptions={{headerShown:false}}>
       <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="DropOff" component={DropOff} />      
+      <Stack.Screen name="SelectRide" component={SelectRide} />      
     </Stack.Navigator>
 }
 

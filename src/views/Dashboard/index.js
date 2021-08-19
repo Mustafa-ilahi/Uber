@@ -8,15 +8,15 @@ import { storeLocation } from '../../config/firebase'
 export default function Dashboard({navigation}) {
   const [currentLocation, setCurrentLocation] = useState('');
   const [pickUpLocation, setPickUpLocation] = useState('');
-    // console.log("Navigation from dashboard",navigation) 
-    const [region, setRegion] = useState({
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  
+  const [region, setRegion] = useState({
             latitude: 24.9323526,
             longitude: 67.0872638,
             latitudeDelta: 0.0022,
             longitudeDelta: 0.0021,
     })
-    const [location, setLocation] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -66,7 +66,14 @@ export default function Dashboard({navigation}) {
   // }
 
     return(
-        <View>
+      <View>
+          <Button 
+        title="Select DropOff" 
+        onPress={()=>navigation.navigate('DropOff',{
+          pickUpLocation: pickUpLocation,
+          pickUpRegion: region
+        })}
+        />
             <MapView style={styles.map} region={region}>
             <Marker 
             title={pickUpLocation}
@@ -82,13 +89,7 @@ export default function Dashboard({navigation}) {
             }
             />
         </MapView>
-
-            {/* <Text style={{fontSize:40}}>DASHBOARD SCREEN</Text>
-            <Button 
-            title="goto DropOff"
-            onPress={()=>navigation.navigate('DropOff')}
-            /> */}
-        </View>
+      </View>
     )
 }
 
