@@ -11,15 +11,15 @@ export default function SelectRide({route,navigation},props){
     const [regionPickUp, setRegionPickUp] = useState({
         latitude: pickUpRegion.latitude,
         longitude: pickUpRegion.longitude,
-        latitudeDelta:0.00922,
-        longitudeDelta: 0.00921,
+        latitudeDelta:0.0922,
+        longitudeDelta: 0.0921,
 })
 
     const [regionDropOff, setRegionDropOff] = useState({
         latitude: dropOffRegion.latitude,
         longitude: dropOffRegion.longitude,
-        latitudeDelta:0.00922,
-        longitudeDelta: 0.00921,
+        latitudeDelta:0.0922,
+        longitudeDelta: 0.0921,
 })
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
@@ -88,7 +88,7 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
         <View style={styles.SelectRide}>
             <TouchableOpacity >
                 {selectedCar ? 
-                <><Text>{selectedCar} {price} PKR</Text></>
+                <><Text style={styles.price}>{selectedCar} {price} PKR</Text></>
                 :
                 <Text style={styles.buttonText}>Select Your Ride</Text>
             }
@@ -137,9 +137,14 @@ const styles = StyleSheet.create({
         height:50
     },
     SelectRide: {
-        marginTop:5,
+        marginTop:20,
         marginBottom:5,
-        backgroundColor:"darkgray",
+        backgroundColor:"wheat",
         height:50
+    },
+    price: {
+        fontSize:20,
+        paddingTop:10,
+        textAlign:"center",
     }
 })
