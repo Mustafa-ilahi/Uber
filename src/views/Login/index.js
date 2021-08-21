@@ -5,8 +5,8 @@ import { useState } from 'react';
 import Dashboard from '../Dashboard';
 
 export default function Login({setIsSignedIn, setDriverSignedIn}){
-  const [userInfo, setUserInfo] = useState();
-  const [driverInfo, setDriverInfo] = useState();
+  const [userInfo, setUserInfo] = useState([]);
+  const [driverData, setDriverInfo] = useState([]);
   return(
     <View>  
               {/* <Text style={{fontSize:50}}>Login</Text> */}
@@ -38,8 +38,8 @@ export default function Login({setIsSignedIn, setDriverSignedIn}){
         if (type === 'success') {
           // Get the user's name using Facebook's Graph API
           const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-          const userInfo = await response.json();
-          setUserInfo(userInfo);
+          // const userInfo = await response.json();
+          // setUserInfo(userInfo);
           Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
           setIsSignedIn(true);
           setDriverSignedIn(false);
@@ -69,8 +69,8 @@ export default function Login({setIsSignedIn, setDriverSignedIn}){
       if (type === 'success') {
         // Get the user's name using Facebook's Graph API
         const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-        const driverInfo = await response.json();
-        setDriverInfo(driverInfo);
+        // const driverInfo = await response.json();
+        // setDriverInfo(driverInfo);
         Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
         setIsSignedIn(true); 
         setDriverSignedIn(true);

@@ -1,10 +1,10 @@
 import firebase from 'firebase/app'
 
 // Optionally import the services that you want to use
-//import "firebase/auth";
+import "firebase/auth";
 //import "firebase/database";
 import "firebase/firestore";
-//import "firebase/functions";
+import "firebase/functions";
 //import "firebase/storage";
 
 // Initialize Firebase
@@ -22,12 +22,19 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 
-function storeLocation(userId="gTHbtgaV0xbS1KSIXhVq",location) {
+function storeLocation (userId="Qtt4HaEVXHoDGVofJwts",location) {
     return db.collection('users').doc(userId).update({
-        location
+        ...location
+    })
+}
+
+function storeDriverLocation (driverId,location) {
+    return db.collection('drivers').doc(driverId).update({
+        ...location
     })
 }
 
 export{
-    storeLocation
+    storeLocation,
+    storeDriverLocation
 }
