@@ -1,13 +1,19 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, Dimensions } from "react-native";
+import { View, Text, Button, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 import MapView ,{Marker} from 'react-native-maps';
 import { useState,useEffect } from "react/cjs/react.development";
 import * as Location from 'expo-location';
-import { storeLocation } from '../../config/firebase';
+import db, { storeLocation, getNearestDrivers, requestDriver } from '../../config/firebase';
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 
 export default function Dashboard({navigation}) {
+  const [region, setRegion] = useState({
+            latitude: 24.9323526,
+            longitude: 67.0872638,
+            latitudeDelta: 0.0022,
+            longitudeDelta: 0.0021,
+    })
   const [currentLocation, setCurrentLocation] = useState('');
   const [pickUpLocation, setPickUpLocation] = useState('');
   const [location, setLocation] = useState(null);
@@ -15,14 +21,11 @@ export default function Dashboard({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText,setLoadingText] = useState('Finding Drivers');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const center = [region.latitude, region.longitude];
+  const radiusInM = 14000; 
   
-  const [region, setRegion] = useState({
-            latitude: 24.9323526,
-            longitude: 67.0872638,
-            latitudeDelta: 0.0022,
-            longitudeDelta: 0.0021,
-    })
     const fetchDrivers = async () =>{
+      setIsLoading(true);
       const bounds = geohashQueryBounds(center, radiusInM);
       const promises = [];
       for(const b of bounds) {
@@ -31,7 +34,7 @@ export default function Dashboard({navigation}) {
       }
       const snapshots = await Promise.all(promises)
       console.log('snapshots==>',snapshots)
-      const matchDocs = [];
+      const matchingDocs = [];
 
       for(const snap of snapshots) {
         for(const doc of snap.docs){
@@ -41,13 +44,35 @@ export default function Dashboard({navigation}) {
 
           const distanceInKm = distanceBetween([lat,lng], center);
           console.log('distance, radiusINM ***', distanceInKm, radiusInM);
-          const distanceInM = distanceInKm * 1000;
+          const distanceInM = distanceInKm * 100000;
           if(distanceInM <= radiusInM) {
-            matchDocs.push({...doc.data(), id: doc.id, distanceInKm});
+            matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
           } 
         }
       }
-      console.log("matchingDocs ===>", matchDocs);
+      setLoadingText(`${matchingDocs.length} Drivers found`)
+      console.log("matchingDocs ===>", matchingDocs);
+      requestDrivers(matchingDocs)
+    }
+    const requestDrivers = async (matchingDocs) =>{
+      await requestDriver(matchingDocs[currentIndex].id,{
+        userId: "Qtt4HaEVXHoDGVofJwts",
+        lat: region.latitudeDelta,
+        lng: region.longitude
+      })
+      console.log("driver requested")
+      listenToRequestedDriver(matchingDocs[currentIndex].id)
+    }
+
+    const listenToRequestedDriver = (driverId) =>{
+      db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
+        const data = doc.data();
+        if(!data.currentRequest){
+          setLoadingText("1 driver rejected! Finding another driver");
+          setCurrentIndex(currentIndex + 1);
+          requestDrivers();
+        }
+      })
     }
 
     useEffect(() => {
@@ -65,7 +90,13 @@ export default function Dashboard({navigation}) {
           //     console.log('location***', location)
           // })
 
-          let location = await Location.getCurrentPositionAsync({});
+          // let location = await Location.getCurrentPositionAsync({});
+          let location ={
+            coords: {
+              latitude: 24.9299578,
+              longitude: 67.0884178
+            }
+          }
           const {coords:{latitude,longitude}} = location
           console.log('loc======>',location)
           setRegion({...region,latitude,longitude})
@@ -111,10 +142,11 @@ export default function Dashboard({navigation}) {
           pickUpRegion: region
         })}
         />
-        {/* <Button 
-        title="chalo"
-        onPress={fetchDrivers}/> */}
-
+          {isLoading && <>
+            <ActivityIndicator size="large" color="#00ff00"/>
+            <Text>{loadingText}</Text>
+            </>
+          }
             <MapView style={styles.map} region={region}>
             {/* region={region} */}
             <Marker 
@@ -131,6 +163,9 @@ export default function Dashboard({navigation}) {
             }
             />
         </MapView>
+            <Button 
+            title="chalo"
+            onPress={fetchDrivers}/>
       </View>
     )
 }
@@ -144,6 +179,6 @@ const styles = StyleSheet.create({
     },
     map: {
       width: Dimensions.get('window').width,
-      height: Dimensions.get('window').height,
+      height: Dimensions.get('window').height * 0.8,
     },
   });
