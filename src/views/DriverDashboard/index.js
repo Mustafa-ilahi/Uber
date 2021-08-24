@@ -36,7 +36,7 @@ export default function DriverDashboard(){
                 const lng = longitude;
                 try{
                   const hash = geohashForLocation([lat,lng]);
-                  await storeDriverLocation('mjMW7OcRMbDRP1URN2go',{
+                  await storeDriverLocation('eRKtPetBcnXj16DjgJ3b',{
                     geohash: hash, lat, lng
                   })
                   console.log("chala gya")

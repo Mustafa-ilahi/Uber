@@ -40,6 +40,7 @@ function getNearestDrivers(b) {
     .startAt(b[0])
     .endAt(b[1]);
 }
+
 function requestDriver (driverId, {userId, lat, lng}) {
     return db.collection('drivers').doc(driverId).update({
         currentRequest: {
@@ -53,12 +54,17 @@ function rejectRequest (driverId) {
     })
 }
 
+function userLogInData(userInfo) {
+    return db.collection('allusers').add(userInfo);
+}
+
 export{
     storeLocation,
     storeDriverLocation,
     getNearestDrivers,
     requestDriver,
-    rejectRequest
+    rejectRequest,
+    userLogInData
 }
 
 export default db;

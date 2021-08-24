@@ -3,9 +3,10 @@ import { View, Text, Button, Alert } from 'react-native';
 import * as Facebook from 'expo-facebook';
 import { useState } from 'react';
 import Dashboard from '../Dashboard';
+import {userLogInData} from '../../config/firebase';
 
 export default function Login({setIsSignedIn, setDriverSignedIn}){
-  const [userInfo, setUserInfo] = useState([]);
+  const [userFbData, setUserFbData] = useState([]);
   const [driverData, setDriverInfo] = useState([]);
   return(
     <View>  
@@ -37,17 +38,24 @@ export default function Login({setIsSignedIn, setDriverSignedIn}){
         });
         if (type === 'success') {
           // Get the user's name using Facebook's Graph API
-          const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-          // const userInfo = await response.json();
-          // setUserInfo(userInfo);
-          Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
+          const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,picture.type(large)`);
+          const userFbData = await response.json();
+          setUserFbData(userFbData)
+          try{
+            await userLogInData(userInfo)
+            console.log("fb data sending successfully");
+          }
+          catch(e){
+            console.log("unable to send fb data")
+          }
+          // Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
           setIsSignedIn(true);
           setDriverSignedIn(false);
         } else {
           // type === 'cancel'
         }
       } catch ({ message }) {
-        alert(`Facebook Login Error: ${message}`);
+        // alert(`Facebook Login Error: ${message}`);
       }
     }
 

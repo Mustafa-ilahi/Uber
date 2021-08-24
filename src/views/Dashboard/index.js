@@ -3,14 +3,14 @@ import { View, Text, Button, StyleSheet, Dimensions, ActivityIndicator } from "r
 import MapView ,{Marker} from 'react-native-maps';
 import { useState,useEffect } from "react/cjs/react.development";
 import * as Location from 'expo-location';
-import db, { storeLocation, getNearestDrivers, requestDriver } from '../../config/firebase';
+import db, { storeLocation, getNearestDrivers } from '../../config/firebase';
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 
 export default function Dashboard({navigation}) {
   const [region, setRegion] = useState({
-            latitude: 24.9323526,
-            longitude: 67.0872638,
+            latitude: 24.9190862,
+            longitude: 67.0639514,
             latitudeDelta: 0.0022,
             longitudeDelta: 0.0021,
     })
@@ -22,58 +22,54 @@ export default function Dashboard({navigation}) {
   const [loadingText,setLoadingText] = useState('Finding Drivers');
   const [currentIndex, setCurrentIndex] = useState(0);
   const center = [region.latitude, region.longitude];
-  const radiusInM = 14000; 
+  const radiusInm = 1000; 
   
     const fetchDrivers = async () =>{
-      setIsLoading(true);
-      const bounds = geohashQueryBounds(center, radiusInM);
-      const promises = [];
-      for(const b of bounds) {
-        const q = getNearestDrivers(b)
-        promises.push(q.get());
-      }
-      const snapshots = await Promise.all(promises)
-      console.log('snapshots==>',snapshots)
-      const matchingDocs = [];
-
-      for(const snap of snapshots) {
-        for(const doc of snap.docs){
-          const lat = doc.get('lat');
-          const lng = doc.get('lng');
-          console.log("doc===>",doc)
-
-          const distanceInKm = distanceBetween([lat,lng], center);
-          console.log('distance, radiusINM ***', distanceInKm, radiusInM);
-          const distanceInM = distanceInKm * 100000;
-          if(distanceInM <= radiusInM) {
-            matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
-          } 
+      const bounds = geohashQueryBounds(center, radiusInm);
+    const promises = [];
+    for (const b of bounds) {
+      const q = getNearestDrivers(b);
+      promises.push(q.get());
+    }
+    const snapshots = await Promise.all(promises);
+    const matchingDocs = [];
+    for (const snap of snapshots) {
+      for (const doc of snap.docs) {
+        const lat = doc.get("lat");
+        const lng = doc.get("lng");
+        const distanceInkm = distanceBetween([lat, lng], center);
+        const distanceInM = distanceInkm * 1000;
+        console.log("distance in Meter=====>", distanceInM);
+        if (distanceInM <= radiusInm) {
+          matchingDocs.push({ ...doc.data(), id: doc.id, distanceInkm });
         }
       }
-      setLoadingText(`${matchingDocs.length} Drivers found`)
-      console.log("matchingDocs ===>", matchingDocs);
-      requestDrivers(matchingDocs)
     }
-    const requestDrivers = async (matchingDocs) =>{
-      await requestDriver(matchingDocs[currentIndex].id,{
-        userId: "Qtt4HaEVXHoDGVofJwts",
-        lat: region.latitudeDelta,
-        lng: region.longitude
-      })
-      console.log("driver requested")
-      listenToRequestedDriver(matchingDocs[currentIndex].id)
+    console.log("matching docs======>", matchingDocs);
+    setLoadingText(`${matchingDocs.length} Drivers Found!`);
+    // requestDrivers(matchingDocs); 
     }
 
-    const listenToRequestedDriver = (driverId) =>{
-      db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
-        const data = doc.data();
-        if(!data.currentRequest){
-          setLoadingText("1 driver rejected! Finding another driver");
-          setCurrentIndex(currentIndex + 1);
-          requestDrivers();
-        }
-      })
-    }
+    // const requestDrivers = async (matchingDocs) =>{
+    //   await requestDriver(matchingDocs[currentIndex].id,{
+    //     userId: "Qtt4HaEVXHoDGVofJwts",
+    //     lat: region.latitudeDelta,
+    //     lng: region.longitude
+    //   })
+    //   console.log("driver requested")
+    //   listenToRequestedDriver(matchingDocs[currentIndex].id)
+    // }
+
+    // const listenToRequestedDriver = (driverId) =>{
+    //   db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
+    //     const data = doc.data();
+    //     if(!data.currentRequest){
+    //       setLoadingText("1 driver rejected! Finding another driver");
+    //       setCurrentIndex(currentIndex + 1);
+    //       requestDrivers();
+    //     }
+    //   })
+    // }
 
     useEffect(() => {
         (async () => {
@@ -93,8 +89,8 @@ export default function Dashboard({navigation}) {
           // let location = await Location.getCurrentPositionAsync({});
           let location ={
             coords: {
-              latitude: 24.9299578,
-              longitude: 67.0884178
+              latitude: 24.9190862,
+              longitude: 67.0639514,            
             }
           }
           const {coords:{latitude,longitude}} = location
@@ -142,6 +138,10 @@ export default function Dashboard({navigation}) {
           pickUpRegion: region
         })}
         />
+        <Button 
+            title="chalo"
+            onPress={fetchDrivers}/>
+
           {isLoading && <>
             <ActivityIndicator size="large" color="#00ff00"/>
             <Text>{loadingText}</Text>
@@ -163,9 +163,7 @@ export default function Dashboard({navigation}) {
             }
             />
         </MapView>
-            <Button 
-            title="chalo"
-            onPress={fetchDrivers}/>
+            
       </View>
     )
 }
