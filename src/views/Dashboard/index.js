@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, Dimensions, ActivityIndicator } from "r
 import MapView ,{Marker} from 'react-native-maps';
 import { useState,useEffect } from "react/cjs/react.development";
 import * as Location from 'expo-location';
-import db, { storeLocation, getNearestDrivers } from '../../config/firebase';
+import db, { storeLocation, getNearestDrivers,requestDriver } from '../../config/firebase';
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 
@@ -22,43 +22,55 @@ export default function Dashboard({navigation}) {
   const [loadingText,setLoadingText] = useState('Finding Drivers');
   const [currentIndex, setCurrentIndex] = useState(0);
   const center = [region.latitude, region.longitude];
-  const radiusInm = 1000; 
+  const radiusInM = 3000; 
   
-    const fetchDrivers = async () =>{
-      const bounds = geohashQueryBounds(center, radiusInm);
+  // fetching drivers from firestore
+  const fetchDrivers = async () =>{
+    setIsLoading(true);
+    const bounds = geohashQueryBounds(center, radiusInM);
     const promises = [];
-    for (const b of bounds) {
-      const q = getNearestDrivers(b);
+    for(const b of bounds) {
+      const q = getNearestDrivers(b)
       promises.push(q.get());
     }
-    const snapshots = await Promise.all(promises);
+
+
+    const snapshots = await Promise.all(promises)
+    console.log('snapshots==>',snapshots)
     const matchingDocs = [];
-    for (const snap of snapshots) {
-      for (const doc of snap.docs) {
-        const lat = doc.get("lat");
-        const lng = doc.get("lng");
-        const distanceInkm = distanceBetween([lat, lng], center);
-        const distanceInM = distanceInkm * 1000;
-        console.log("distance in Meter=====>", distanceInM);
-        if (distanceInM <= radiusInm) {
-          matchingDocs.push({ ...doc.data(), id: doc.id, distanceInkm });
-        }
+
+    for(const snap of snapshots) {
+      for(const doc of snap.docs){
+        const lat = doc.get('lat');
+        const lng = doc.get('lng');
+        console.log("doc===>",doc)
+
+
+    //calculating a distance
+    const distanceInKm = distanceBetween([lat,lng], center);
+    console.log('distance, radiusINM ***', distanceInKm, radiusInM);
+    const distanceInM = distanceInKm * 1000;
+    if(distanceInM <= radiusInM) {
+        matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
+        } 
       }
     }
-    console.log("matching docs======>", matchingDocs);
-    setLoadingText(`${matchingDocs.length} Drivers Found!`);
-    // requestDrivers(matchingDocs); 
-    }
+    setLoadingText(`${matchingDocs.length} Drivers found`)
+    setIsLoading(false)
+    console.log("matchingDocs ===>", matchingDocs);
+    requestDrivers(matchingDocs)
+  }
 
-    // const requestDrivers = async (matchingDocs) =>{
-    //   await requestDriver(matchingDocs[currentIndex].id,{
-    //     userId: "Qtt4HaEVXHoDGVofJwts",
-    //     lat: region.latitudeDelta,
-    //     lng: region.longitude
-    //   })
-    //   console.log("driver requested")
-    //   listenToRequestedDriver(matchingDocs[currentIndex].id)
-    // }
+
+    const requestDrivers = async (matchingDocs) =>{
+      await requestDriver(matchingDocs[currentIndex].id,{
+        userId: "Qtt4HaEVXHoDGVofJwts",
+        lat: region.latitudeDelta,
+        lng: region.longitude
+      })
+      console.log("driver requested")
+      listenToRequestedDriver(matchingDocs[currentIndex].id)
+    }
 
     // const listenToRequestedDriver = (driverId) =>{
     //   db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
@@ -89,8 +101,8 @@ export default function Dashboard({navigation}) {
           // let location = await Location.getCurrentPositionAsync({});
           let location ={
             coords: {
-              latitude: 24.9190862,
-              longitude: 67.0639514,            
+              latitude: 24.923004910313587,
+              longitude: 67.09245833543879,            
             }
           }
           const {coords:{latitude,longitude}} = location
@@ -144,7 +156,7 @@ export default function Dashboard({navigation}) {
 
           {isLoading && <>
             <ActivityIndicator size="large" color="#00ff00"/>
-            <Text>{loadingText}</Text>
+            <Text style={{textAlign:"center",fontSize:16}}>{loadingText}</Text>
             </>
           }
             <MapView style={styles.map} region={region}>

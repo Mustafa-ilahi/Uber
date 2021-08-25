@@ -26,7 +26,7 @@ export default function MainNavigator() {
     return<NavigationContainer>
             <Stack.Navigator screenOptions={{headerShown: false}}>
                 {
-                    !isSignedIn ?
+                    isSignedIn ?
                 <Stack.Screen name="Auth" component={()=> <AuthNavigator setIsSignedIn={setIsSignedIn} setDriverSignedIn={setDriverSignedIn} />} />
                 :
                   !driverSignedIn ? 

@@ -32,8 +32,8 @@ export default function DriverDashboard(){
                 const {coords: {latitude, longitude}} = location
                 setRegion({...region, latitude, longitude});
                 console.log('location***', location)
-                const lat = latitude;
-                const lng = longitude;
+                const lat = 24.9323526;
+                const lng = 67.087263;
                 try{
                   const hash = geohashForLocation([lat,lng]);
                   await storeDriverLocation('eRKtPetBcnXj16DjgJ3b',{
