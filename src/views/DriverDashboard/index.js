@@ -3,7 +3,7 @@ import { View, Text, StyleSheet,Dimensions, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import MapView ,{Marker} from 'react-native-maps';
 import { useEffect, useState } from 'react/cjs/react.development';
-import db, {storeDriverLocation} from '../../config/firebase'
+import db, {rejectRequest, storeDriverLocation} from '../../config/firebase'
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 export default function DriverDashboard(){
@@ -30,9 +30,25 @@ export default function DriverDashboard(){
       if(data.currentRequest){
         Alert.alert(
           "Ride Request",
-          "1 user requested a ride"
-          
-        )
+          "1 user requested a ride",
+          [
+            {
+              text: "Accept",
+              onPress: ()=> Alert.alert("Accept Pressed"),
+              style: "Ok"
+            },
+            
+            {
+              text: "Cancel",
+              onPress: ()=> rejectRequest('eRKtPetBcnXj16DjgJ3b'),
+              style: "cancel"
+            }
+          ],
+          {
+            cancelable: true,
+            onDismiss: () => Alert.alert("This alert was dismissed by tapping outing")
+          }
+          );
         
       }
     })

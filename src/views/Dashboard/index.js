@@ -65,23 +65,23 @@ export default function Dashboard({navigation}) {
     const requestDrivers = async (matchingDocs) =>{
       await requestDriver(matchingDocs[currentIndex].id,{
         userId: "Qtt4HaEVXHoDGVofJwts",
-        lat: region.latitudeDelta,
+        lat: region.latitude,
         lng: region.longitude
       })
       console.log("driver requested")
       listenToRequestedDriver(matchingDocs[currentIndex].id)
     }
 
-    // const listenToRequestedDriver = (driverId) =>{
-    //   db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
-    //     const data = doc.data();
-    //     if(!data.currentRequest){
-    //       setLoadingText("1 driver rejected! Finding another driver");
-    //       setCurrentIndex(currentIndex + 1);
-    //       requestDrivers();
-    //     }
-    //   })
-    // }
+    const listenToRequestedDriver = (driverId) =>{
+      db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
+        const data = doc.data();
+        if(!data.currentRequest){
+          setCurrentIndex(currentIndex + 1);
+          requestDrivers();
+          setLoadingText("1 driver rejected! Finding another driver");
+        }
+      })
+    }
 
     useEffect(() => {
         (async () => {

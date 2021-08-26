@@ -29,7 +29,7 @@ export default function MainNavigator() {
                     !isSignedIn ?
                 <Stack.Screen name="Auth" component={()=> <AuthNavigator setIsSignedIn={setIsSignedIn} setDriverSignedIn={setDriverSignedIn} />} />
                 :
-                  !driverSignedIn ? 
+                   !driverSignedIn ? 
                   <Stack.Screen name="App" component={AppNavigator} />
                   : 
                   <Stack.Screen name="App" component={DriverNavigator} />
