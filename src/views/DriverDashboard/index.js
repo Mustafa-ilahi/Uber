@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { View, Text, StyleSheet,Dimensions } from 'react-native';
+import { View, Text, StyleSheet,Dimensions, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import MapView ,{Marker} from 'react-native-maps';
 import { useEffect, useState } from 'react/cjs/react.development';
-import {storeDriverLocation} from '../../config/firebase'
+import db, {storeDriverLocation} from '../../config/firebase'
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 export default function DriverDashboard(){
@@ -18,13 +18,34 @@ export default function DriverDashboard(){
         latitudeDelta: 0.0022,
         longitudeDelta: 0.0021,
 })
+
+  useEffect(()=>{
+    listenToRequests()
+  },[])
+
+  const listenToRequests = () =>{
+    db.collection('drivers').doc('eRKtPetBcnXj16DjgJ3b').onSnapshot((doc)=>{
+      console.log('doc data==>',doc.data());
+      const data = doc.data()
+      if(data.currentRequest){
+        Alert.alert(
+          "Ride Request",
+          "1 user requested a ride"
+          
+        )
+        
+      }
+    })
+  }
+
     useEffect(()=>{
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-              setErrorMsg('Permission to access location was denied');
-              return;
-            }
+      
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setErrorMsg('Permission to access location was denied');
+          return;
+        }
 
             Location.watchPositionAsync({
                 distanceInterval: 0.01

@@ -56,7 +56,7 @@ export default function Dashboard({navigation}) {
       }
     }
     setLoadingText(`${matchingDocs.length} Drivers found`)
-    setIsLoading(false)
+    // setIsLoading(false)
     console.log("matchingDocs ===>", matchingDocs);
     requestDrivers(matchingDocs)
   }
