@@ -3,8 +3,7 @@ import { View, Text, Button, StyleSheet, Dimensions, ActivityIndicator } from "r
 import MapView ,{Marker} from 'react-native-maps';
 import { useState,useEffect } from "react/cjs/react.development";
 import * as Location from 'expo-location';
-import db, { storeLocation, getNearestDrivers,requestDriver } from '../../config/firebase';
-import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
+import db, { storeLocation, requestDriver } from '../../config/firebase';
 
 
 export default function Dashboard({navigation}) {
@@ -18,70 +17,7 @@ export default function Dashboard({navigation}) {
   const [pickUpLocation, setPickUpLocation] = useState('');
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingText,setLoadingText] = useState('Finding Drivers');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const center = [region.latitude, region.longitude];
-  const radiusInM = 3000; 
-  
-  // fetching drivers from firestore
-  const fetchDrivers = async () =>{
-    setIsLoading(true);
-    const bounds = geohashQueryBounds(center, radiusInM);
-    const promises = [];
-    for(const b of bounds) {
-      const q = getNearestDrivers(b)
-      promises.push(q.get());
-    }
 
-
-    const snapshots = await Promise.all(promises)
-    console.log('snapshots==>',snapshots)
-    const matchingDocs = [];
-
-    for(const snap of snapshots) {
-      for(const doc of snap.docs){
-        const lat = doc.get('lat');
-        const lng = doc.get('lng');
-        console.log("doc===>",doc)
-
-
-    //calculating a distance
-    const distanceInKm = distanceBetween([lat,lng], center);
-    console.log('distance, radiusINM ***', distanceInKm, radiusInM);
-    const distanceInM = distanceInKm * 1000;
-    if(distanceInM <= radiusInM) {
-        matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
-        } 
-      }
-    }
-    setLoadingText(`${matchingDocs.length} Drivers found`)
-    // setIsLoading(false)
-    console.log("matchingDocs ===>", matchingDocs);
-    requestDrivers(matchingDocs)
-  }
-
-
-    const requestDrivers = async (matchingDocs) =>{
-      await requestDriver(matchingDocs[currentIndex].id,{
-        userId: "Qtt4HaEVXHoDGVofJwts",
-        lat: region.latitude,
-        lng: region.longitude
-      })
-      console.log("driver requested")
-      listenToRequestedDriver(matchingDocs[currentIndex].id)
-    }
-
-    const listenToRequestedDriver = (driverId) =>{
-      db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
-        const data = doc.data();
-        if(!data.currentRequest){
-          setCurrentIndex(currentIndex + 1);
-          requestDrivers();
-          setLoadingText("1 driver rejected! Finding another driver");
-        }
-      })
-    }
 
     useEffect(() => {
         (async () => {
@@ -150,17 +86,7 @@ export default function Dashboard({navigation}) {
           pickUpRegion: region
         })}
         />
-        <Button 
-            title="chalo"
-            onPress={fetchDrivers}/>
-
-          {isLoading && <>
-            <ActivityIndicator size="large" color="#00ff00"/>
-            <Text style={{textAlign:"center",fontSize:16}}>{loadingText}</Text>
-            </>
-          }
-            <MapView style={styles.map} region={region}>
-            {/* region={region} */}
+          <MapView style={styles.map} region={region}>
             <Marker 
             title={pickUpLocation}
             coordinate={region}

@@ -58,13 +58,22 @@ function userLogInData(userInfo) {
     return db.collection('allusers').add(userInfo);
 }
 
+function acceptedRequest (userId, {driverId, lat, lng}) {
+    return db.collection('users').doc(userId).update({
+        acceptedRequest: {
+            driverId, lat, lng
+        }
+    })
+}
+
 export{
     storeLocation,
     storeDriverLocation,
     getNearestDrivers,
     requestDriver,
     rejectRequest,
-    userLogInData
+    userLogInData,
+    acceptedRequest
 }
 
 export default db;

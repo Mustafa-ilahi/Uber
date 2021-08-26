@@ -3,7 +3,7 @@ import { View, Text, StyleSheet,Dimensions, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import MapView ,{Marker} from 'react-native-maps';
 import { useEffect, useState } from 'react/cjs/react.development';
-import db, {rejectRequest, storeDriverLocation} from '../../config/firebase'
+import db, {rejectRequest, storeDriverLocation, acceptedRequest} from '../../config/firebase'
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 export default function DriverDashboard(){
@@ -26,20 +26,25 @@ export default function DriverDashboard(){
   const listenToRequests = () =>{
     db.collection('drivers').doc('eRKtPetBcnXj16DjgJ3b').onSnapshot((doc)=>{
       console.log('doc data==>',doc.data());
-      const data = doc.data()
-      if(data.currentRequest){
-        Alert.alert(
+      const data =  doc.data()
+       if(data.currentRequest){
+        //  console.log("userID==>",data.currentRequest.userId)
+         Alert.alert(
           "Ride Request",
           "1 user requested a ride",
           [
             {
               text: "Accept",
-              onPress: ()=> Alert.alert("Accept Pressed"),
+              onPress: ()=> acceptedRequest(data.currentRequest.userId,{
+                driverId: 'eRKtPetBcnXj16DjgJ3b',
+                lat: region.latitude,
+                lng: region.longitude
+              }),
               style: "Ok"
             },
             
             {
-              text: "Cancel",
+              text: "Reject",
               onPress: ()=> rejectRequest('eRKtPetBcnXj16DjgJ3b'),
               style: "cancel"
             }

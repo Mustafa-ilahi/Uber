@@ -1,19 +1,27 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image,Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image,Button,Alert, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import MapView ,{Marker} from 'react-native-maps';
+import {getNearestDrivers, requestDriver} from '../../config/firebase'
+import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 export default function SelectRide({route,navigation},props){
     const [price,setPrice] = useState();
     const [selectedCar,setSelectedCar] = useState();
     const [isSelected,setIsSelected] = useState(false);
     const {pickUpLocation, dropOffLocation,pickUpRegion,dropOffRegion} = route.params;
+    const [isLoading, setIsLoading] = useState(false);
+    const [loadingText,setLoadingText] = useState('Finding Drivers');
+    const [currentIndex, setCurrentIndex] = useState(0);
+    
     const [regionPickUp, setRegionPickUp] = useState({
         latitude: pickUpRegion.latitude,
         longitude: pickUpRegion.longitude,
         latitudeDelta:0.0922,
         longitudeDelta: 0.0921,
-})
+    })
+    const center = [regionPickUp.latitude, regionPickUp.longitude];
+    const radiusInM = 3000; 
 
     const [regionDropOff, setRegionDropOff] = useState({
         latitude: dropOffRegion.latitude,
@@ -21,6 +29,70 @@ export default function SelectRide({route,navigation},props){
         latitudeDelta:0.0922,
         longitudeDelta: 0.0921,
 })
+
+
+// fetching drivers from firestore
+  const fetchDrivers = async () =>{
+    setIsLoading(true);
+    const bounds = geohashQueryBounds(center, radiusInM);
+    const promises = [];
+    for(const b of bounds) {
+      const q = getNearestDrivers(b)
+      promises.push(q.get());
+    }
+
+
+    const snapshots = await Promise.all(promises)
+    console.log('snapshots==>',snapshots)
+    const matchingDocs = [];
+
+    for(const snap of snapshots) {
+      for(const doc of snap.docs){
+        const lat = doc.get('lat');
+        const lng = doc.get('lng');
+        console.log("doc===>",doc)
+
+
+    //calculating a distance
+    const distanceInKm = distanceBetween([lat,lng], center);
+    console.log('distance, radiusINM ***', distanceInKm, radiusInM);
+    const distanceInM = distanceInKm * 1000;
+    if(distanceInM <= radiusInM) {
+        matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
+        } 
+      }
+    }
+    setLoadingText(`${matchingDocs.length} Drivers found`)
+    // setIsLoading(false)
+    console.log("matchingDocs ===>", matchingDocs);
+    requestDrivers(matchingDocs)
+  }
+
+  const requestDrivers = async (matchingDocs) =>{
+      await requestDriver(matchingDocs[currentIndex].id,{
+        userId: "Qtt4HaEVXHoDGVofJwts",
+        lat: pickUpRegion.latitude,
+        lng: pickUpRegion.longitude
+      })
+      Alert.alert("1 driver requested")
+      listenToRequestedDriver(matchingDocs[currentIndex].id)
+    }
+    const listenToRequestedDriver = (driverId) =>{
+      db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
+        const data = doc.data();
+        if(!data.currentRequest){
+          setCurrentIndex(currentIndex + 1);
+          requestDrivers();
+          setLoadingText("1 driver rejected! Finding another driver");
+        }
+        // else{
+        //     Alert.alert("Driver Accepted")
+        // }
+      })
+      
+    }
+
+// Calculating Payment
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     var lat1 = pickUpRegion.latitude;
@@ -43,10 +115,23 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   function deg2rad(deg) {
     return deg * (Math.PI/180)
   }
-
-
     return(
+        
         <View style={styles.container}>
+                {isLoading && <>
+                <ActivityIndicator size="large" color="#00ff00"/>
+                <Text style={{textAlign:"center",fontSize:16}}>{loadingText}</Text>
+                </>
+                }
+            <View style={styles.SelectRide}>
+            <TouchableOpacity onPress={fetchDrivers}>
+                {/* {selectedCar ? 
+                <><Text style={styles.price}>Lets Ride!</Text></>
+                : */}
+                <Text style={styles.buttonText}>Lets Ride!</Text>
+            {/* } */}
+            </TouchableOpacity>
+        </View>
             <Text style={styles.pickUpLocation}>PickUp Location: <Text style={styles.location}>{pickUpLocation}</Text></Text>
             <Text style={styles.pickUpLocation}>DropOff Location: <Text style={styles.location}>{dropOffLocation}</Text></Text>
             {/* <Text>{"\n"}</Text> */}
@@ -85,15 +170,7 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
                 <Text style={styles.buttonText}>Business</Text>
             </TouchableOpacity>
         </View>
-        <View style={styles.SelectRide}>
-            <TouchableOpacity >
-                {selectedCar ? 
-                <><Text style={styles.price}>{selectedCar} {price} PKR</Text></>
-                :
-                <Text style={styles.buttonText}>Select Your Ride</Text>
-            }
-            </TouchableOpacity>
-        </View>
+        
         </View>
     )
 }
