@@ -2,8 +2,9 @@ import * as React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image,Button,Alert, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import MapView ,{Marker} from 'react-native-maps';
-import {getNearestDrivers, requestDriver} from '../../config/firebase'
+import db, {getNearestDrivers, requestDriver, storeDropOffLocation} from '../../config/firebase'
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
+import { useEffect } from 'react/cjs/react.development';
 
 export default function SelectRide({route,navigation},props){
     const [price,setPrice] = useState();
@@ -13,7 +14,8 @@ export default function SelectRide({route,navigation},props){
     const [isLoading, setIsLoading] = useState(false);
     const [loadingText,setLoadingText] = useState('Finding Drivers');
     const [currentIndex, setCurrentIndex] = useState(0);
-    
+    const [request, setRequest] = useState(false);
+
     const [regionPickUp, setRegionPickUp] = useState({
         latitude: pickUpRegion.latitude,
         longitude: pickUpRegion.longitude,
@@ -29,7 +31,6 @@ export default function SelectRide({route,navigation},props){
         latitudeDelta:0.0922,
         longitudeDelta: 0.0921,
 })
-
 
 // fetching drivers from firestore
   const fetchDrivers = async () =>{
@@ -74,7 +75,7 @@ export default function SelectRide({route,navigation},props){
         lat: pickUpRegion.latitude,
         lng: pickUpRegion.longitude
       })
-      Alert.alert("1 driver requested")
+      Alert.alert("Requesting to 1 driver")
       listenToRequestedDriver(matchingDocs[currentIndex].id)
     }
     const listenToRequestedDriver = (driverId) =>{
@@ -85,11 +86,14 @@ export default function SelectRide({route,navigation},props){
           requestDrivers();
           setLoadingText("1 driver rejected! Finding another driver");
         }
-        // else{
-        //     Alert.alert("Driver Accepted")
-        // }
       })
-      
+      db.collection('users').doc('Qtt4HaEVXHoDGVofJwts').onSnapshot((doc)=>{
+        const data = doc.data();
+        if(data.acceptedRequest){
+          setLoadingText("1 driver accepted!");
+          storeDropOffLocation('Qtt4HaEVXHoDGVofJwts',regionDropOff);
+        }
+      })
     }
 
 // Calculating Payment
@@ -119,7 +123,9 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
         
         <View style={styles.container}>
                 {isLoading && <>
-                <ActivityIndicator size="large" color="#00ff00"/>
+                <Image 
+                style={{height:100}}
+                source={{uri: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif?cid=ecf05e4736p8duzse7v642wwy2bnkh3xsdcgndlxf1l4p9cn&rid=giphy.gif&ct=g"}}/>
                 <Text style={{textAlign:"center",fontSize:16}}>{loadingText}</Text>
                 </>
                 }
@@ -141,7 +147,6 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
                 <Marker title={dropOffLocation} 
                 coordinate={regionDropOff}/>
             </MapView>
-            {/* <Text>{"\n"}</Text> */}
         <View style={styles.miniBtn}>
             <TouchableOpacity onPress={()=>{{
             setPrice(Math.round(25*getDistanceFromLatLonInKm()))

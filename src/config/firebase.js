@@ -61,7 +61,16 @@ function userLogInData(userInfo) {
 function acceptedRequest (userId, {driverId, lat, lng}) {
     return db.collection('users').doc(userId).update({
         acceptedRequest: {
-            driverId, lat, lng
+            driverId, lat, lng,
+            type: "accepted"
+        }
+    })
+}
+
+function storeDropOffLocation(userId, dropOffRegion){
+    return db.collection('users').doc(userId).update({
+        dropOffLocation: {
+            dropOffRegion
         }
     })
 }
@@ -73,7 +82,8 @@ export{
     requestDriver,
     rejectRequest,
     userLogInData,
-    acceptedRequest
+    acceptedRequest,
+    storeDropOffLocation
 }
 
 export default db;

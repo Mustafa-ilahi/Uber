@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
+import { View, Text, Button, StyleSheet, Dimensions, ActivityIndicator, Image } from "react-native";
 import MapView ,{Marker} from 'react-native-maps';
 import { useState,useEffect } from "react/cjs/react.development";
 import * as Location from 'expo-location';
-import db, { storeLocation, requestDriver } from '../../config/firebase';
-
+import db, { storeLocation } from '../../config/firebase';
+// import loader from '../../../assets/loader.svg';
 
 export default function Dashboard({navigation}) {
   const [region, setRegion] = useState({
@@ -100,8 +100,7 @@ export default function Dashboard({navigation}) {
               })
             }
             />
-        </MapView>
-            
+        </MapView>      
       </View>
     )
 }
