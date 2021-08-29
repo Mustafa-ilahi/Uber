@@ -13,6 +13,7 @@ import TripDetails from '../views/TripDetails';
 import Login from "../views/Login";
 import SelectRide from "../views/SelectRide";
 import DriverDashboard from '../views/DriverDashboard';
+import StarRideUser from "../views/StartRideUser";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -60,6 +61,7 @@ function DashboardStack() {
       <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="DropOff" component={DropOff} />      
       <Stack.Screen name="SelectRide" component={SelectRide} />      
+      <Stack.Screen name="StartRide" component={StarRideUser} />      
     </Stack.Navigator>
 }
 

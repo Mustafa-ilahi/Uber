@@ -13,8 +13,8 @@ export default function DriverDashboard(){
     const [errorMsg, setErrorMsg] = useState(null);
     
     const [region, setRegion] = useState({
-        latitude: 24.9323526,
-        longitude: 67.0872638,
+        latitude: 24.9311073,
+        longitude: 67.0858476,
         latitudeDelta: 0.0022,
         longitudeDelta: 0.0021,
 })
@@ -74,8 +74,8 @@ export default function DriverDashboard(){
                 const {coords: {latitude, longitude}} = location
                 setRegion({...region, latitude, longitude});
                 console.log('location***', location)
-                const lat = 24.9323526;
-                const lng = 67.087263;
+                const lat = 24.90;
+                const lng = 67.08;
                 try{
                   const hash = geohashForLocation([lat,lng]);
                   await storeDriverLocation('eRKtPetBcnXj16DjgJ3b',{

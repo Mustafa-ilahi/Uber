@@ -4,7 +4,6 @@ import { useState } from 'react';
 import MapView ,{Marker} from 'react-native-maps';
 import db, {getNearestDrivers, requestDriver, storeDropOffLocation} from '../../config/firebase'
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
-import { useEffect } from 'react/cjs/react.development';
 
 export default function SelectRide({route,navigation},props){
     const [price,setPrice] = useState();
@@ -77,6 +76,7 @@ export default function SelectRide({route,navigation},props){
       })
       Alert.alert("Requesting to 1 driver")
       listenToRequestedDriver(matchingDocs[currentIndex].id)
+      navigation.navigate('StartRide');
     }
     const listenToRequestedDriver = (driverId) =>{
       db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
@@ -90,8 +90,10 @@ export default function SelectRide({route,navigation},props){
       db.collection('users').doc('Qtt4HaEVXHoDGVofJwts').onSnapshot((doc)=>{
         const data = doc.data();
         if(data.acceptedRequest){
+          setIsLoading(false)
           setLoadingText("1 driver accepted!");
           storeDropOffLocation('Qtt4HaEVXHoDGVofJwts',regionDropOff);
+
         }
       })
     }
