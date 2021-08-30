@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react/cjs/react.development';
 import db, {rejectRequest, storeDriverLocation, acceptedRequest} from '../../config/firebase'
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
-export default function DriverDashboard(){
+export default function DriverDashboard({navigation}){
     const [currentLocation, setCurrentLocation] = useState('');
     const [pickUpLocation, setPickUpLocation] = useState('');
     const [location, setLocation] = useState(null);
@@ -24,7 +24,7 @@ export default function DriverDashboard(){
   },[])
 
   const listenToRequests = () =>{
-    db.collection('drivers').doc('eRKtPetBcnXj16DjgJ3b').onSnapshot((doc)=>{
+    db.collection('drivers').doc('ql5ZsQpDd667aUZVwvfZ').onSnapshot((doc)=>{
       console.log('doc data==>',doc.data());
       const data =  doc.data()
        if(data.currentRequest){
@@ -34,12 +34,16 @@ export default function DriverDashboard(){
           "1 user requested a ride",
           [
             {
+              // StartRideDriver
               text: "Accept",
-              onPress: ()=> acceptedRequest(data.currentRequest.userId,{
+              onPress: ()=>{ acceptedRequest(data.currentRequest.userId,{
                 driverId: 'eRKtPetBcnXj16DjgJ3b',
                 lat: region.latitude,
                 lng: region.longitude
-              }),
+              });
+               navigation.navigate("Start Riding")
+            }
+              ,
               style: "Ok"
             },
             

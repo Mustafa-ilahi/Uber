@@ -1,16 +1,18 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert, Button } from 'react-native';
 import MapView ,{Marker} from 'react-native-maps';
 import { useEffect, useState } from 'react/cjs/react.development';
 import db from '../../config/firebase';
 import * as Location from 'expo-location';
+// import { Button } from 'react-native-paper';
 
-export default function StarRideUser(){
+export default function StarRideDriver({navigation}){
     const [location, setLocation] = useState(null);
     const [driverRegion, setDriverRegion] = useState();
-    const [userRegion, setUserRegion] = useState()
-    const [droffRegion, setDroffRegion] = useState()
-    const [rideStatus, setRideStatus] = useState(false)
+    const [userRegion, setUserRegion] = useState();
+    const [droffRegion, setDroffRegion] = useState();
+    const [rideStatus, setRideStatus] = useState(false);
+    const [rideComplete,setRideComplete] = useState(false);
     useEffect(()=>{
 
         (async () => {
@@ -22,8 +24,8 @@ export default function StarRideUser(){
 
         db.collection('users').doc('Qtt4HaEVXHoDGVofJwts').onSnapshot((doc)=>{
             const data = doc.data();
-            console.log("data==>",data.acceptedRequest)
-            console.log("drop off===>",data.dropOffLocation.dropOffRegion.latitude)
+            // console.log("data==>",data.acceptedRequest)
+            // console.log("drop off===>",data.dropOffLocation.dropOffRegion.latitude)
             setDriverRegion({
                     latitude: data.acceptedRequest.lat,
                     longitude: data.acceptedRequest.lng,
@@ -56,30 +58,40 @@ export default function StarRideUser(){
     // })
         // console.log("---->")
         if(driverRegion == driverRegion){
-            Alert.alert("Driver Arrived");
+            // Alert.alert("User Arrived");
             setRideStatus(true)
         }
     },[])
-    // console.log("driverRegion==>",driverRegion)
+    console.log("driverRegion==>",driverRegion)
+
+    function startRide() {
+        Alert.alert("Ride Started Successfully");
+        navigation.navigate("Ride Screen")
+    }
     return(
         <View>
-            <MapView style={styles.map} region={driverRegion}>
+            {/* <MapView style={styles.map} region={driverRegion}>
                 {driverRegion && <Marker  
                 image={require('../../../assets/car.png')}
                 style={{height:10,width:0}}
                 coordinate={driverRegion}/>}
                 <Marker coordinate={driverRegion}
-                title="pickup"/>
+                title="pickup"/> 
 
-                {rideStatus &&  <Marker coordinate={droffRegion} title="dropOff"/>}
-            </MapView>
+                {rideStatus &&  
+                <Marker coordinate={droffRegion} title="dropOff"/>
+                }
+            </MapView> */}
+            {
+                rideStatus && <Button title="Start Ride" onPress={startRide}/>
+            }
         </View>
-    )
+    )   
 }
 
 const styles = StyleSheet.create({
     map: {
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height
+        height: Dimensions.get('window').height * 0.8
       },
 })

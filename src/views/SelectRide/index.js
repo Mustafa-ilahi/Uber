@@ -76,7 +76,6 @@ export default function SelectRide({route,navigation},props){
       })
       Alert.alert("Requesting to 1 driver")
       listenToRequestedDriver(matchingDocs[currentIndex].id)
-      navigation.navigate('StartRide');
     }
     const listenToRequestedDriver = (driverId) =>{
       db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
@@ -93,6 +92,7 @@ export default function SelectRide({route,navigation},props){
           setIsLoading(false)
           setLoadingText("1 driver accepted!");
           storeDropOffLocation('Qtt4HaEVXHoDGVofJwts',regionDropOff);
+          navigation.navigate('StartRide');
 
         }
       })

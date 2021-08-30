@@ -37,8 +37,8 @@ export default function Dashboard({navigation}) {
           // let location = await Location.getCurrentPositionAsync({});
           let location ={
             coords: {
-              latitude: 24.923004910313587,
-              longitude: 67.09245833543879,            
+              latitude: 24.9190862,
+              longitude: 67.0639514,            
             }
           }
           const {coords:{latitude,longitude}} = location
@@ -68,7 +68,9 @@ export default function Dashboard({navigation}) {
         fetch(`https://api.foursquare.com/v2/venues/search?client_id=WW3RFWSW52A4L14OURWZ2RKBJBQAN0WZK4P02JUZMMH15N0B&client_secret=Y500SBLI0E0XCQOEFB0OPOKHY0HNDC2UEI50GDTBYOH0DHRC&near=${region.latitude},${region.longitude}&v=20180323`)
             .then(res => res.json())
             .then(res => setPickUpLocation(res.response.venues[0].name))
+            // console.log(region.latitude,region.longitude)
       },[region])
+
 
     let text = 'Waiting..';
     if (errorMsg) {
