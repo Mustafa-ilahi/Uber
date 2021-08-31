@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Dimensions, TextInput, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TextInput, TouchableOpacity } from 'react-native';
+import { Button } from 'react-native-paper';
 import * as Location from 'expo-location';
 import MapView ,{Marker} from 'react-native-maps';
 import { useState,useEffect } from 'react/cjs/react.development';
@@ -24,15 +25,15 @@ export default function DropOff({route,navigation},props){
         <View style={styles.mainView}>
             <Text style={styles.pickUpLocation}>PickUp Location: <Text style={styles.location}>{pickUpLocation}</Text></Text>
             <TextInput style={styles.input} placeholder="Search Your Drop Location"/>
-            <Button style={{color:"red"}} title="Select Ride" 
-            onPress={()=>navigation.navigate('SelectRide',{
+            <Button mode="contained" style={{backgroundColor:"black"}} onPress={()=>navigation.navigate('SelectRide',{
                 dropOffLocation: dropOffLocation,
                 pickUpLocation: pickUpLocation,
                 pickUpRegion: pickUpRegion,
                 dropOffRegion: region
-            })}/>
+            })}>Select Ride</Button>
             <MapView style={styles.map} region={region}>
             <Marker 
+            pinColor={'navy'}
             title={dropOffLocation}
             coordinate={region}
             draggable={true}
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
         color:"#000000"
     },
     location: {
-        color:"red",
+        color:"navy",
         textTransform:"capitalize"
     },
     map: {
@@ -69,7 +70,8 @@ const styles = StyleSheet.create({
       },
       input: {
         height: 50,
-        margin: 12,
+        marginTop: 12,
+        marginBottom: 5,
         borderWidth: 2,
         padding: 10,
         fontSize: 16,

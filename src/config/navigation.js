@@ -70,7 +70,7 @@ function DashboardStack() {
 function DriverNavigator() {
   return  <Stack.Navigator screenOptions={{headerShown:true}}>
     <Stack.Screen name="Driver Screen" component={DriverDashboard} />
-    <Stack.Screen name="Start Riding" component={StartRideDriver} /> 
+    <Stack.Screen name="Confirm Ride" component={StartRideDriver} /> 
     <Stack.Screen name="Ride Screen" component={EndRideDriver} /> 
 
     {/* <Stack.Screen name="DropOff" component={DropOff} />      

@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, Dimensions, ActivityIndicator, Image } from "react-native";
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator, Image } from "react-native";
+import { Button } from 'react-native-paper';
 import MapView ,{Marker} from 'react-native-maps';
 import { useState,useEffect } from "react/cjs/react.development";
 import * as Location from 'expo-location';
@@ -45,8 +46,8 @@ export default function Dashboard({navigation}) {
           console.log('loc======>',location)
           setRegion({...region,latitude,longitude})
           setLocation(location);
-          const lat = latitude;
-          const lng = longitude;
+          const lat = region.latitude;
+          const lng = region.longitude;
           try{
             const hash = geohashForLocation([lat,lng]);
             await storeLocation(undefined, {
@@ -68,7 +69,6 @@ export default function Dashboard({navigation}) {
         fetch(`https://api.foursquare.com/v2/venues/search?client_id=WW3RFWSW52A4L14OURWZ2RKBJBQAN0WZK4P02JUZMMH15N0B&client_secret=Y500SBLI0E0XCQOEFB0OPOKHY0HNDC2UEI50GDTBYOH0DHRC&near=${region.latitude},${region.longitude}&v=20180323`)
             .then(res => res.json())
             .then(res => setPickUpLocation(res.response.venues[0].name))
-            // console.log(region.latitude,region.longitude)
       },[region])
 
 
@@ -81,15 +81,15 @@ export default function Dashboard({navigation}) {
 
     return(
       <View>
-          <Button 
-        title="Select DropOff" 
-        onPress={()=>navigation.navigate('DropOff',{
+        <Button mode="contained" style={{backgroundColor:"black"}} onPress={()=>navigation.navigate('DropOff',{
           pickUpLocation: pickUpLocation,
           pickUpRegion: region
-        })}
-        />
-          <MapView style={styles.map} region={region}>
+        })}>Select DropOff</Button>
+
+            
+          <MapView style={styles.map} region={region} >
             <Marker 
+            pinColor={'navy'}
             title={pickUpLocation}
             coordinate={region}
             draggable={true}
@@ -116,6 +116,6 @@ const styles = StyleSheet.create({
     },
     map: {
       width: Dimensions.get('window').width,
-      height: Dimensions.get('window').height * 0.8,
+      height: Dimensions.get('window').height,
     },
   });

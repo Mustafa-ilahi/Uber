@@ -64,17 +64,17 @@ export default function EndRideDriver(){
     },[])
     console.log("driverRegion==>",driverRegion)
 
-    function endRide() {
-        Alert.alert("Ending Ride");
+    function startRide() {
+        Alert.alert("Start Ride");
     }
     return(
         <View>
-            <MapView style={styles.map} region={droffRegion}>
+            <MapView style={styles.map} region={driverRegion}>
                 {driverRegion && <Marker  
                 image={require('../../../assets/car.png')}
                 style={{height:10,width:0}}
-                coordinate={droffRegion}/>}
-                <Marker coordinate={droffRegion}
+                coordinate={driverRegion}/>}
+                <Marker coordinate={driverRegion}
                 title="pickup"/> 
 
                 {rideStatus &&  
@@ -82,7 +82,7 @@ export default function EndRideDriver(){
                 }
             </MapView>
             {
-                rideStatus && <Button title="End Ride" onPress={endRide}/>
+                rideStatus && <Button title="Start" onPress={startRide}/>
             }
             {/* <Text>
                 Hello ending screeeeeeen

@@ -67,10 +67,11 @@ function acceptedRequest (userId, {driverId, lat, lng}) {
     })
 }
 
-function storeDropOffLocation(userId, dropOffRegion){
+function storeDropOffLocation(userId, dropOffRegion,dropOffLocation){
     return db.collection('users').doc(userId).update({
         dropOffLocation: {
-            dropOffRegion
+            dropOffRegion,
+            dropOffLocation
         }
     })
 }

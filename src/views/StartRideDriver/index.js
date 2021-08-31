@@ -65,7 +65,7 @@ export default function StarRideDriver({navigation}){
     console.log("driverRegion==>",driverRegion)
 
     function startRide() {
-        Alert.alert("Ride Started Successfully");
+        // Alert.alert("Ride Started Successfully");
         navigation.navigate("Ride Screen")
     }
     return(
@@ -83,7 +83,8 @@ export default function StarRideDriver({navigation}){
                 }
             </MapView> */}
             {
-                rideStatus && <Button title="Start Ride" onPress={startRide}/>
+                rideStatus && <Button title="Confirm
+                 Ride" onPress={startRide}/>
             }
         </View>
     )   

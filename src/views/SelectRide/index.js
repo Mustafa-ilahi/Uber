@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image,Button,Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image,Alert, ActivityIndicator } from 'react-native';
+import { List,Button } from 'react-native-paper';
+
 import { useState } from 'react';
 import MapView ,{Marker} from 'react-native-maps';
 import db, {getNearestDrivers, requestDriver, storeDropOffLocation} from '../../config/firebase'
@@ -11,7 +13,7 @@ export default function SelectRide({route,navigation},props){
     const [isSelected,setIsSelected] = useState(false);
     const {pickUpLocation, dropOffLocation,pickUpRegion,dropOffRegion} = route.params;
     const [isLoading, setIsLoading] = useState(false);
-    const [loadingText,setLoadingText] = useState('Finding Drivers');
+    const [loadingText,setLoadingText] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
     const [request, setRequest] = useState(false);
 
@@ -63,8 +65,8 @@ export default function SelectRide({route,navigation},props){
       }
     }
     setLoadingText(`${matchingDocs.length} Drivers found`)
-    // setIsLoading(false)
     console.log("matchingDocs ===>", matchingDocs);
+    setIsLoading(false)
     requestDrivers(matchingDocs)
   }
 
@@ -83,17 +85,15 @@ export default function SelectRide({route,navigation},props){
         if(!data.currentRequest){
           setCurrentIndex(currentIndex + 1);
           requestDrivers();
-          setLoadingText("1 driver rejected! Finding another driver");
+          setLoadingText("1 driver rejected! Finding another driver")
         }
       })
       db.collection('users').doc('Qtt4HaEVXHoDGVofJwts').onSnapshot((doc)=>{
         const data = doc.data();
         if(data.acceptedRequest){
-          setIsLoading(false)
           setLoadingText("1 driver accepted!");
-          storeDropOffLocation('Qtt4HaEVXHoDGVofJwts',regionDropOff);
+          storeDropOffLocation('Qtt4HaEVXHoDGVofJwts',regionDropOff,dropOffLocation);
           navigation.navigate('StartRide');
-
         }
       })
     }
@@ -124,79 +124,86 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     return(
         
         <View style={styles.container}>
-                {isLoading && <>
-                <Image 
-                style={{height:100}}
-                source={{uri: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif?cid=ecf05e4736p8duzse7v642wwy2bnkh3xsdcgndlxf1l4p9cn&rid=giphy.gif&ct=g"}}/>
+                {isLoading ? <>
+                  <ActivityIndicator size="large" color="black" />
+                </>
+                :
+                <>
                 <Text style={{textAlign:"center",fontSize:16}}>{loadingText}</Text>
                 </>
                 }
-            <View style={styles.SelectRide}>
-            <TouchableOpacity onPress={fetchDrivers}>
-                {/* {selectedCar ? 
-                <><Text style={styles.price}>Lets Ride!</Text></>
-                : */}
-                <Text style={styles.buttonText}>Lets Ride!</Text>
-            {/* } */}
-            </TouchableOpacity>
-        </View>
-            <Text style={styles.pickUpLocation}>PickUp Location: <Text style={styles.location}>{pickUpLocation}</Text></Text>
-            <Text style={styles.pickUpLocation}>DropOff Location: <Text style={styles.location}>{dropOffLocation}</Text></Text>
-            {/* <Text>{"\n"}</Text> */}
-            <MapView style={styles.map} initialRegion={pickUpRegion}>
-                <Marker title={pickUpLocation} 
-                coordinate={regionPickUp}/>
-                <Marker title={dropOffLocation} 
-                coordinate={regionDropOff}/>
-            </MapView>
-        <View style={styles.miniBtn}>
-            <TouchableOpacity onPress={()=>{{
+            <View style={styles.heading}>
+              <Text style={styles.pickUpLocation}>Pick-up Location: <Text style={styles.location}>{pickUpLocation}</Text></Text>
+              <Text style={styles.pickUpLocation}>Drop-off Location: <Text style={styles.location}>{dropOffLocation}</Text></Text>
+              </View>
+              <MapView style={styles.map} initialRegion={pickUpRegion}>
+                  <Marker title={pickUpLocation} 
+                  coordinate={regionPickUp}/>
+                  <Marker title={dropOffLocation} 
+                  coordinate={regionDropOff}/>
+              </MapView>
+        <List.Section>
+          <List.Item style={{backgroundColor:"black", borderWidth:1, borderColor:"white"}}
+          title='Mini'
+          titleStyle={{color:"lightgray"}}
+          left={() => <List.Icon icon="car" color="lightgray"/>} 
+          onPress={()=>{{
             setPrice(Math.round(25*getDistanceFromLatLonInKm()))
-             setSelectedCar('Mini')
-             setIsSelected(true)
-              }}}>
-
-                <Text style={styles.buttonText}>Mini</Text>
-            </TouchableOpacity>
-        </View>
-        <View style={styles.goBtn}>
-            <TouchableOpacity onPress={()=>{{
+            setSelectedCar('Mini')
+            setIsSelected(true)
+          }}}
+          />
+          <List.Item style={{backgroundColor:"black",borderWidth:1, borderColor:"white"}}
+          title='Go'
+          titleStyle={{color:"lightgray"}}
+          left={() => <List.Icon icon="car-side" color="lightgray" />} 
+          onPress={()=>{{
             setPrice(Math.round(45*getDistanceFromLatLonInKm()))
              setSelectedCar('Go')
              setIsSelected(true)
-              }}}>
-                <Text style={styles.buttonText}>Go</Text>
-            </TouchableOpacity>
-        </View>
-        <View style={styles.Btn}>
-            <TouchableOpacity onPress={()=>{{
+            }}}
+          />
+
+        <List.Item style={{backgroundColor:"black",borderWidth:1, borderColor:"white"}}
+          title='Business'
+          titleStyle={{color:"lightgray"}}
+          left={() => <List.Icon icon="car-side" color="lightgray" />} 
+          onPress={()=>{{
             setPrice(Math.round(60*getDistanceFromLatLonInKm()))
              setSelectedCar('Business')
              setIsSelected(true)
-              }}}>
-                <Text style={styles.buttonText}>Business</Text>
-            </TouchableOpacity>
-        </View>
-        
+            }}}
+          />
+        </List.Section>
+        <Button mode="contained" style={{backgroundColor:"gray",borderWidth:2, borderColor:"black"}} onPress={fetchDrivers}>
+          {selectedCar ? 
+          <>{selectedCar} {price} PKR</>
+          :
+          <>Select Your Ride</>
+          }
+          </Button>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        // backgroundColor: "lightgray"
+      fontFamily: 'sans-serif-condensed',
     },
+  //   heading: {
+  //     marginTop:-15
+  //  },
     pickUpLocation: {
         fontWeight:"bold",
         textAlign:"center",
-        color:"#000000"
+        color:"#000000",
     },
     location: {
-        color:"red",
+        color:"navy",
         textTransform:"capitalize"
     },
     map: {
-        height:350,
+        height:330,
         width:400,
       },
     buttonText: {
@@ -230,5 +237,5 @@ const styles = StyleSheet.create({
         fontSize:20,
         paddingTop:10,
         textAlign:"center",
-    }
+    },
 })

@@ -41,7 +41,7 @@ export default function DriverDashboard({navigation}){
                 lat: region.latitude,
                 lng: region.longitude
               });
-               navigation.navigate("Start Riding")
+               navigation.navigate("Confirm Ride")
             }
               ,
               style: "Ok"

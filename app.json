@@ -3,11 +3,11 @@
     "name": "uber",
     "slug": "uber",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "orientation": "potrait",
+    "icon": "./assets/uberLogo.gif",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "image": "./assets/uberLogo.gif",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "updates": {

@@ -1,25 +1,24 @@
 import * as React from 'react';
-import { View, Text, Button, Alert } from 'react-native';
+import { View, Text, Alert, Image,StyleSheet } from 'react-native';
 import * as Facebook from 'expo-facebook';
 import { useState } from 'react';
 import Dashboard from '../Dashboard';
 import {userLogInData} from '../../config/firebase';
+import { Button } from 'react-native-paper';
 
 export default function Login({setIsSignedIn, setDriverSignedIn}){
   const [userFbData, setUserFbData] = useState([]);
   const [driverData, setDriverInfo] = useState([]);
   return(
     <View>  
-              {/* <Text style={{fontSize:50}}>Login</Text> */}
-              <Button 
-              title="Login as User"
-              onPress={userFacebookLogIn}
-              />
-              <Text>{"\n"}</Text>
-              <Button 
-              title="Login as Driver"
-              onPress={driverFacebookLogIn}
-              />
+        <Text style={styles.heading}>Welcome to Uber</Text>
+        <View style={style=styles.imgContainer}>
+          <Image source={require('../../../assets/ubericon.png')} style={styles.img}/>
+        </View>
+        <Text>{"\n"}</Text>
+        <Button mode="contained" style={{backgroundColor:"black"}} onPress={userFacebookLogIn}>Login as User</Button>
+        <Text>{"\n"}</Text>
+        <Button mode="contained" style={{backgroundColor:"black"}} onPress={driverFacebookLogIn}>Login as Driver</Button>
         </View>
     )
     async function userFacebookLogIn() {
@@ -79,7 +78,7 @@ export default function Login({setIsSignedIn, setDriverSignedIn}){
         const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
         // const driverInfo = await response.json();
         // setDriverInfo(driverInfo);
-        Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
+        // Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
         setIsSignedIn(true); 
         setDriverSignedIn(true);
       } else {
@@ -90,4 +89,21 @@ export default function Login({setIsSignedIn, setDriverSignedIn}){
     }
   }
   }
-  
+
+  const styles = StyleSheet.create({
+    heading : {
+      fontSize: 25, 
+      textAlign:"center", 
+      fontFamily: 'sans-serif-condensed',
+      marginTop: 15,
+    },
+    imgContainer: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 10
+    },
+    img: {
+      height:70,
+      width: 70
+    }
+  })
