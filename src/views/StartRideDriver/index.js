@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Dimensions, Alert, Button } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native';
 import MapView ,{Marker} from 'react-native-maps';
 import { useEffect, useState } from 'react/cjs/react.development';
 import db from '../../config/firebase';
 import * as Location from 'expo-location';
-// import { Button } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 
 export default function StarRideDriver({navigation}){
     const [location, setLocation] = useState(null);
@@ -13,6 +13,8 @@ export default function StarRideDriver({navigation}){
     const [droffRegion, setDroffRegion] = useState();
     const [rideStatus, setRideStatus] = useState(false);
     const [rideComplete,setRideComplete] = useState(false);
+    const [dropOffLocation,setDropOffLocation] = useState();
+    const [pickUpLocation,setPickUpLocation] = useState();
     useEffect(()=>{
 
         (async () => {
@@ -24,8 +26,10 @@ export default function StarRideDriver({navigation}){
 
         db.collection('users').doc('Qtt4HaEVXHoDGVofJwts').onSnapshot((doc)=>{
             const data = doc.data();
-            // console.log("data==>",data.acceptedRequest)
-            // console.log("drop off===>",data.dropOffLocation.dropOffRegion.latitude)
+            console.log("data==>",data)
+            console.log("drop off===>",data.dropOffLocation.dropOffRegion.latitude)
+            setDropOffLocation(data.dropOffLocation.dropOffLocation)
+            setPickUpLocation(data.pickUpLocation.pickUpLocation)
             setDriverRegion({
                     latitude: data.acceptedRequest.lat,
                     longitude: data.acceptedRequest.lng,
@@ -57,16 +61,26 @@ export default function StarRideDriver({navigation}){
         // })
     // })
         // console.log("---->")
-        if(driverRegion == driverRegion){
-            // Alert.alert("User Arrived");
-            setRideStatus(true)
-        }
+        // if(driverRegion == driverRegion){
+        //     // Alert.alert("User Arrived");
+        //     setRideStatus(true)
+        // }
+        // {
+        //     dropOffLocation && Alert.alert(`Drop-off location is: ${dropOffLocation}`);
+        // }
+        // {
+        //     pickUpLocation && Alert.alert(`Pick-up location is: ${pickUpLocation}`);
+        // }
+
     },[])
     console.log("driverRegion==>",driverRegion)
 
     function startRide() {
-        // Alert.alert("Ride Started Successfully");
-        // navigation.navigate("Ride Screen")
+        Alert.alert(`Ride Started from: ${pickUpLocation}`);
+    }
+    
+    function endRide() {
+        Alert.alert(`Reached at: ${dropOffLocation}`);
     }
     return(
         <View>
@@ -75,17 +89,46 @@ export default function StarRideDriver({navigation}){
                 image={require('../../../assets/car.png')}
                 style={{height:10,width:0}}
                 coordinate={driverRegion}/>}
-                <Marker coordinate={driverRegion}
-                title="pickup"/> 
 
-                {rideStatus &&  
-                <Marker coordinate={droffRegion} title="dropOff"/>
+                {userRegion &&
+                <Marker coordinate={userRegion}
+                title="pickup"/> 
+                }
+
+                {droffRegion && 
+                <Marker coordinate={droffRegion} title="dropOff" pinColor={'navy'}/>
                 }
             </MapView> */}
-            {
-                rideStatus && <Button title="Confirm
-                 Ride" onPress={startRide}/>
-            }
+            {/* <MapView style={styles.map} region={userRegion}>
+                {userRegion && <Marker  
+                image={require('../../../assets/car.png')}
+                style={{height:10,width:0}}
+                coordinate={userRegion}/>}
+
+                {userRegion &&
+                <Marker coordinate={userRegion}
+                title="pickup"/> 
+                }
+
+                {droffRegion && 
+                <Marker coordinate={droffRegion} title="dropOff" pinColor={'navy'}/>
+                }
+            </MapView> */}
+
+            <MapView style={styles.map} region={droffRegion}>
+                {droffRegion && <Marker  
+                image={require('../../../assets/car.png')}
+                style={{height:10,width:0}}
+                coordinate={droffRegion}/>}
+
+                {droffRegion && 
+                <Marker coordinate={droffRegion} title="dropOff" pinColor={'navy'}/>
+                }
+            </MapView>
+            
+            {/* <Button mode="contained" disabled >Start Ride</Button> */}
+            {/* <Button mode="contained" onPress={startRide} style={{backgroundColor:"black"}}>Start Ride</Button> */}
+            <Button mode="contained" onPress={endRide} style={{backgroundColor:"black"}}>End Ride</Button>
         </View>
     )   
 }

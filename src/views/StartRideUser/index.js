@@ -8,9 +8,11 @@ import * as Location from 'expo-location';
 export default function StarRideUser(){
     const [location, setLocation] = useState(null);
     const [driverRegion, setDriverRegion] = useState();
-    const [userRegion, setUserRegion] = useState()
-    const [dropOffRegion, setDropOffRegion] = useState()
-    const [rideStatus, setRideStatus] = useState(false)
+    const [userRegion, setUserRegion] = useState();
+    const [dropOffRegion, setDropOffRegion] = useState();
+    const [rideStatus, setRideStatus] = useState(false);
+    const [dropOffLocation,setDropOffLocation] = useState();
+    const [pickUpLocation,setPickUpLocation] = useState();
     useEffect(()=>{
 
         (async () => {
@@ -24,6 +26,8 @@ export default function StarRideUser(){
             const data = doc.data();
             console.log("data==>",data)
             console.log("drop off===>",data.dropOffLocation.dropOffRegion.latitude)
+            setDropOffLocation(data.dropOffLocation.dropOffLocation)
+            setPickUpLocation(data.pickUpLocation.pickUpLocation)
             setDriverRegion({
                     latitude: data.acceptedRequest.lat,
                     longitude: data.acceptedRequest.lng,
@@ -32,7 +36,7 @@ export default function StarRideUser(){
                 })
                 setUserRegion({
                     latitude: data.pickUpLocation.pickUpRegion.latitude,
-                    longitude: data.pickUpLocation.pickUpRegion.latitude,
+                    longitude: data.pickUpLocation.pickUpRegion.longitude,
                     latitudeDelta: 0.0022,
                     longitudeDelta: 0.0021
                 })
@@ -55,24 +59,35 @@ export default function StarRideUser(){
         // })
     // })
         // console.log("---->")
-        if(driverRegion == driverRegion){
-            Alert.alert("Driver Arrived");
-            setRideStatus(true)
-        }
+        // if(driverRegion == driverRegion){
+        //     // Alert.alert("User Arrived");
+        //     setRideStatus(true)
+        // }
+        // {
+        //     dropOffLocation && Alert.alert(`Drop-off location is: ${dropOffLocation}`);
+        // }
+        // {
+        //     pickUpLocation && Alert.alert(`Pick-up location is: ${pickUpLocation}`);
+        // }
+
     },[])
     console.log("userRegion==>",userRegion)
     return(
         <View>
-            <MapView style={styles.map} region={userRegion}>
-                {driverRegion && 
-                <Marker  
+            <MapView style={styles.map} region={driverRegion}>
+                {driverRegion && <Marker  
                 image={require('../../../assets/car.png')}
                 style={{height:10,width:0}}
                 coordinate={driverRegion}/>}
-                {/* <Marker coordinate={dropOffRegion}
-                title="pickup"/> */}
-            
-                {rideStatus &&  <Marker coordinate={dropOffRegion} title="dropOff" pinColor={'navy'}/>}
+
+                {userRegion &&
+                <Marker coordinate={userRegion}
+                title="pickup"/> 
+                }
+
+                {dropOffRegion && 
+                <Marker coordinate={dropOffRegion} title="dropOff" pinColor={'navy'}/>
+                }
             </MapView>
         </View>
     )

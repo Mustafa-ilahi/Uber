@@ -15,7 +15,7 @@ import SelectRide from "../views/SelectRide";
 import DriverDashboard from '../views/DriverDashboard';
 import StartRideUser from "../views/StartRideUser";
 import StartRideDriver from "../views/StartRideDriver";
-import EndRideDriver from "../views/EndRideDriver";
+import DrawerContent from "../components/DrawerContent";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -50,7 +50,7 @@ function AuthNavigator({setIsSignedIn,setDriverSignedIn}) {
             </Stack.Navigator>
 }
 function AppNavigator(){
-    return  <Drawer.Navigator>
+    return  <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
     <Drawer.Screen name="User Screen" component={DashboardStack} />
     <Drawer.Screen name="Trips Stack" component={TripsStack} />
     {/* <Drawer.Screen name="Login" component={Login} /> */}
@@ -70,8 +70,8 @@ function DashboardStack() {
 function DriverNavigator() {
   return  <Stack.Navigator screenOptions={{headerShown:true}}>
     <Stack.Screen name="Driver Screen" component={DriverDashboard} />
-    <Stack.Screen name="Confirm Ride" component={StartRideDriver} /> 
-    <Stack.Screen name="Ride Screen" component={EndRideDriver} /> 
+    <Stack.Screen name="Ride Screen" component={StartRideDriver} /> 
+    {/* <Stack.Screen name="Ride Screen Driver" component={EndRideDriver} />  */}
 
     {/* <Stack.Screen name="DropOff" component={DropOff} />      
     <Stack.Screen name="SelectRide" component={SelectRide} />       */}
