@@ -92,7 +92,7 @@ export default function SelectRide({route,navigation},props){
         const data = doc.data();
         if(data.acceptedRequest){
           setLoadingText("1 driver accepted!");
-          storeDropOffLocation('Qtt4HaEVXHoDGVofJwts',regionDropOff,dropOffLocation);
+          storeDropOffLocation('Qtt4HaEVXHoDGVofJwts',regionDropOff,dropOffLocation,regionPickUp,pickUpLocation);
           navigation.navigate('StartRide');
         }
       })
@@ -139,7 +139,8 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
               <MapView style={styles.map} initialRegion={pickUpRegion}>
                   <Marker title={pickUpLocation} 
                   coordinate={regionPickUp}/>
-                  <Marker title={dropOffLocation} 
+                  <Marker title={dropOffLocation}
+                  pinColor={'navy'} 
                   coordinate={regionDropOff}/>
               </MapView>
         <List.Section>
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
         textTransform:"capitalize"
     },
     map: {
-        height:330,
+        height:300,
         width:400,
       },
     buttonText: {

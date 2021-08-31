@@ -33,8 +33,8 @@ export default function EndRideDriver(){
                     longitudeDelta: 0.0021
                 })
                 setUserRegion({
-                    latitude: data.lat,
-                    longitude: data.lng,
+                    latitude: data.pickUpLocation.pickUpRegion.latitude,
+                    longitude: data.pickUpLocation.pickUpRegion.longitude,
                     latitudeDelta: 0.0022,
                     longitudeDelta: 0.0021
                 })
@@ -69,12 +69,12 @@ export default function EndRideDriver(){
     }
     return(
         <View>
-            <MapView style={styles.map} region={driverRegion}>
+            <MapView style={styles.map} region={userRegion}>
                 {driverRegion && <Marker  
                 image={require('../../../assets/car.png')}
                 style={{height:10,width:0}}
                 coordinate={driverRegion}/>}
-                <Marker coordinate={driverRegion}
+                <Marker coordinate={userRegion}
                 title="pickup"/> 
 
                 {rideStatus &&  

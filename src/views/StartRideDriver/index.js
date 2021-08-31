@@ -33,8 +33,8 @@ export default function StarRideDriver({navigation}){
                     longitudeDelta: 0.0021
                 })
                 setUserRegion({
-                    latitude: data.lat,
-                    longitude: data.lng,
+                    latitude: data.pickUpLocation.pickUpRegion.latitude,
+                    longitude: data.pickUpLocation.pickUpRegion.longitude,
                     latitudeDelta: 0.0022,
                     longitudeDelta: 0.0021
                 })
@@ -66,7 +66,7 @@ export default function StarRideDriver({navigation}){
 
     function startRide() {
         // Alert.alert("Ride Started Successfully");
-        navigation.navigate("Ride Screen")
+        // navigation.navigate("Ride Screen")
     }
     return(
         <View>

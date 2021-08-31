@@ -4,9 +4,9 @@
     "slug": "uber",
     "version": "1.0.0",
     "orientation": "potrait",
-    "icon": "./assets/uberLogo.gif",
+    "icon": "./assets/uberSplash.jpeg",
     "splash": {
-      "image": "./assets/uberLogo.gif",
+      "image": "./assets/uberSplash.jpeg",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },

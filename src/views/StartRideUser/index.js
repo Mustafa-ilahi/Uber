@@ -9,7 +9,7 @@ export default function StarRideUser(){
     const [location, setLocation] = useState(null);
     const [driverRegion, setDriverRegion] = useState();
     const [userRegion, setUserRegion] = useState()
-    const [droffRegion, setDroffRegion] = useState()
+    const [dropOffRegion, setDropOffRegion] = useState()
     const [rideStatus, setRideStatus] = useState(false)
     useEffect(()=>{
 
@@ -22,7 +22,7 @@ export default function StarRideUser(){
 
         db.collection('users').doc('Qtt4HaEVXHoDGVofJwts').onSnapshot((doc)=>{
             const data = doc.data();
-            console.log("data==>",data.acceptedRequest)
+            console.log("data==>",data)
             console.log("drop off===>",data.dropOffLocation.dropOffRegion.latitude)
             setDriverRegion({
                     latitude: data.acceptedRequest.lat,
@@ -31,12 +31,12 @@ export default function StarRideUser(){
                     longitudeDelta: 0.0021
                 })
                 setUserRegion({
-                    latitude: data.lat,
-                    longitude: data.lng,
+                    latitude: data.pickUpLocation.pickUpRegion.latitude,
+                    longitude: data.pickUpLocation.pickUpRegion.latitude,
                     latitudeDelta: 0.0022,
                     longitudeDelta: 0.0021
                 })
-                setDroffRegion({
+                setDropOffRegion({
                     latitude: data.dropOffLocation.dropOffRegion.latitude,
                     longitude: data.dropOffLocation.dropOffRegion.longitude,
                     latitudeDelta: 0.0022,
@@ -60,18 +60,19 @@ export default function StarRideUser(){
             setRideStatus(true)
         }
     },[])
-    // console.log("driverRegion==>",driverRegion)
+    console.log("userRegion==>",userRegion)
     return(
         <View>
-            <MapView style={styles.map} region={driverRegion}>
-                {driverRegion && <Marker  
+            <MapView style={styles.map} region={userRegion}>
+                {driverRegion && 
+                <Marker  
                 image={require('../../../assets/car.png')}
                 style={{height:10,width:0}}
                 coordinate={driverRegion}/>}
-                <Marker coordinate={driverRegion}
-                title="pickup"/>
-
-                {rideStatus &&  <Marker coordinate={droffRegion} title="dropOff"/>}
+                {/* <Marker coordinate={dropOffRegion}
+                title="pickup"/> */}
+            
+                {rideStatus &&  <Marker coordinate={dropOffRegion} title="dropOff" pinColor={'navy'}/>}
             </MapView>
         </View>
     )

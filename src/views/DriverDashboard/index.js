@@ -13,8 +13,8 @@ export default function DriverDashboard({navigation}){
     const [errorMsg, setErrorMsg] = useState(null);
     
     const [region, setRegion] = useState({
-        latitude: 24.9311073,
-        longitude: 67.0858476,
+        latitude: 24.9218401,
+        longitude: 67.0601765,
         latitudeDelta: 0.0022,
         longitudeDelta: 0.0021,
 })
